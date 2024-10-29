@@ -74,35 +74,37 @@ export function decorateMain(main) {
  * @param {Element} doc The container element
  */
 async function loadEager(doc) {
+  document.documentElement.lang = 'en';
   // Detect the user's language or fallback to 'en' if unavailable
-  const userLang = navigator.language || navigator.userLanguage || 'en';
-  document.documentElement.lang = userLang;
+  //const userLang = navigator.language || navigator.userLanguage || 'en';
+  //document.documentElement.lang = userLang;
 
   // Create an object mapping languages to URLs
-const urlMap = {
-  en: '/en/',  // English content path
-  fr: '/fr/',  // French content path
-  de: '/de/',  // German content path
-  default: '/' // Default path 
-};
+//const urlMap = {
+  //en: '/en/',  // English content path
+  //fr: '/fr/',  // French content path
+  //de: '/de/',  // German content path
+  //default: '/' // Default path 
+//};
 
 // Function to get the content path based on language
-function getContentPathForLang(language) {
-  const baseLang = language.split('-')[0]; // Extract base language (e.g., 'en' from 'en-US')
-  return urlMap[baseLang] || urlMap.default; // Fallback to 'default' if language not in the map
-}
+//function getContentPathForLang(language) {
+  //const baseLang = language.split('-')[0]; // Extract base language (e.g., 'en' from 'en-US')
+  //return urlMap[baseLang] || urlMap.default; // Fallback to 'default' if language not in the map
+//}
 
+// Remove language-based redirection
 // Get the content path for the user's language
-const contentPath = getContentPathForLang(userLang);
+//const contentPath = getContentPathForLang(userLang);
 
 // Perform a soft redirect only if the current path is different
-if (window.location.pathname !== contentPath) {
+//if (window.location.pathname !== contentPath) {
   // Use history.pushState to change the URL without reloading the page
-  window.history.pushState(null, '', contentPath);
+  //window.history.pushState(null, '', contentPath);
 
   // Optionally, load new content for the current language
-  await loadContent(contentPath);
-}
+  //await loadContent(contentPath);
+//}
 
   decorateTemplateAndTheme();
   const main = doc.querySelector('main');
