@@ -3,7 +3,7 @@ main > .section > div.roadmap-wrapper {
   --background: #232323;
   --lines: #616161;
   --index: 0;
-  --blue-rgb: 48, 135, 230; /* blue: # */
+  --blue-rgb: 48, 135, 230; /* # */
   --blue: rgb(var(--blue-rgb));
   --pink-rgb: 228, 57, 179; /* #e439b3 */
   --pink: rgb(var(--pink-rgb));
@@ -14,10 +14,7 @@ main > .section > div.roadmap-wrapper {
   --purple-rgb: 99, 73, 224;  /* #6349e0 */
   --purple: rgb(var(--purple-rgb));
 
-  box-shadow:
-    inset 0 0 40px rgba(0, 0, 0, 20%);  /* Top shadow */
-
-
+  box-shadow: 0 0 40px rgb(0 0 0 / 40%);
   position: relative;
   max-width: 100dvw;
   margin: 0;
@@ -28,7 +25,6 @@ main > .section > div.roadmap-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-
 
   .roadmap {
     width: min(100%, 2000px);
@@ -48,6 +44,7 @@ main > .section > div.roadmap-wrapper {
       font-weight: 300;
       text-align: center;
       padding: 0 0 20px;
+      span { opacity: .5; margin: 0 10px; }
     }
 
     .timeline {
@@ -67,8 +64,7 @@ main > .section > div.roadmap-wrapper {
         overflow: hidden; /* use auto for testing animations */
         line-height: 40px; /* match '> div' margin-top  */
 
-        /* text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4); */
-        li.y {
+         li.y {
           font-size: var(--heading-font-size-m);
           font-weight: 400;
           height: 40px;
@@ -102,7 +98,7 @@ main > .section > div.roadmap-wrapper {
             color: var(--background);
             text-shadow: none;
             font-weight: 600;
-            border-right: 3px solid #000;
+            border-right: 3px solid var(--background);
 
             @media (width <= 1400px) {
               width: 540px;
@@ -116,7 +112,6 @@ main > .section > div.roadmap-wrapper {
               li.p {
                 position: relative;
                 margin: 0 0 0 6px;
-                cursor: pointer;
                 opacity: 0;
                 filter: blur(40px);
                 padding-left: 80px;
@@ -140,6 +135,11 @@ main > .section > div.roadmap-wrapper {
                   font-weight: 500;
                   letter-spacing: .017em; /* match bold font */
                   transition: color .5s, background .5s;
+
+                  span {
+                    padding: 8px 0;
+                    cursor: pointer;
+                  }
 
                   li.p:first-child & { padding-top: 30px } /* adjust top */
                   .btn { color: #fff }
@@ -173,6 +173,10 @@ main > .section > div.roadmap-wrapper {
 
                   /* dots */
                   &::before { scale: 1.2 }
+                }
+
+                &:focus {
+                  outline: none;
                 }
 
                 .tooltip {
@@ -311,5 +315,4 @@ main > .section > div.roadmap-wrapper {
     }
   }
 }
-
 
