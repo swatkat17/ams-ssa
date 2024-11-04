@@ -1,16 +1,35 @@
 /* eslint-disable no-use-before-define, object-curly-newline, function-paren-newline */
 import { div, ul, li, p, a, span, sup } from '../../scripts/dom-helpers.js';
-import { scrollToMe, fixYears } from '../../scripts/animations.js';
+import { scrollToMe } from '../../scripts/animations.js';
 import { readBlockConfig } from '../../scripts/aem.js';
 
-// Helper function to generate all quarters between start and end
+// Generate all quarters between start and end
 function generateYearQuarterRange(start, end) {
-  const [startYear, startQuarter] = start.split('-');
-  const [endYear, endQuarter] = end.split('-');
+  let [startYear, startQuarter] = start.split('-');
+  let [endYear, endQuarter] = end.split('-');
+
+  // Adjust start to one quarter earlier
+  startQuarter = parseInt(startQuarter.replace('Q', ''), 10) - 1;
+  if (startQuarter === 0) {
+    startQuarter = 4;
+    startYear = parseInt(startYear, 10) - 1;
+  }
+
+  // Adjust end to one quarter later
+  endQuarter = parseInt(endQuarter.replace('Q', ''), 10) + 1;
+  if (endQuarter === 5) {
+    endQuarter = 1;
+    endYear = parseInt(endYear, 10) + 1;
+  }
+
+  // fill in anny empty quarters
   const yearQuarterList = [];
   let currentYear = parseInt(startYear, 10);
-  let currentQuarter = parseInt(startQuarter.replace('Q', ''), 10);
-  while (currentYear < parseInt(endYear, 10) || (currentYear === parseInt(endYear, 10) && currentQuarter <= parseInt(endQuarter.replace('Q', ''), 10))) {
+  let currentQuarter = parseInt(startQuarter, 10);
+  while (
+    currentYear < parseInt(endYear, 10)
+    || (currentYear === parseInt(endYear, 10) && currentQuarter <= parseInt(endQuarter, 10))
+  ) {
     yearQuarterList.push({ year: currentYear, quarter: `Q${currentQuarter}` });
     currentQuarter += 1;
     if (currentQuarter > 4) {
@@ -46,6 +65,24 @@ function compareYearQuarter(yq1, yq2) {
   return 0;
 }
 
+function fixYears(block, years) {
+  // get center position
+  const leftPosition = (window.innerWidth / 2) - 50;
+
+  block.addEventListener('scroll', () => {
+    const scrollLeftPos = block.scrollLeft;
+
+    years.forEach((year) => {
+      const yearLeftPos = year.offsetLeft;
+      if (scrollLeftPos >= yearLeftPos - leftPosition) {
+        year.classList.add('fixed');
+      } else {
+        year.classList.remove('fixed');
+      }
+    });
+  });
+}
+
 export default function decorate(block) {
   const blockConfig = readBlockConfig(block);
 
@@ -56,8 +93,9 @@ export default function decorate(block) {
   const currentQuarter = `Q${Math.floor(currentMonth / 3) + 1}`;
 
   let activePos;
-  let posIndex = 0;
-  let yearIndex = 0;
+  let yIndex = 0;
+  let qIndex = 0;
+  let pTabIndex = 1;
 
   block.innerHTML = '';
 
@@ -69,10 +107,15 @@ export default function decorate(block) {
       const fullYearQuarterRange = generateYearQuarterRange(earliest, latest);
 
       // Group data by year and quarter
-      const groupData = roadmapData.reduce((acc, { year, quarter, project, description, path }) => {
+      // eslint-disable-next-line max-len
+      const groupData = roadmapData.reduce((acc, { year, quarter, project, description, path, sort, btn }) => {
         acc[year] = acc[year] || {};
         acc[year][quarter] = acc[year][quarter] || [];
-        acc[year][quarter].push({ title: project, tip: description, path });
+        acc[year][quarter].push({ title: project, tip: description, path, sort, btn });
+
+        // Sort the projects for this quarter by the sort number
+        acc[year][quarter].sort((A, B) => A.sort - B.sort);
+
         return acc;
       }, {});
 
@@ -82,7 +125,9 @@ export default function decorate(block) {
       );
 
       const $disclaimer = div({ class: 'disclaimer' },
-        ' EA: Early Availability | GA: General Availability',
+        'EA = Early Availability',
+        span(' | '),
+        'GA = General Availability',
       );
 
       const $years = ul({ class: 'years' });
@@ -90,8 +135,8 @@ export default function decorate(block) {
       fullYearQuarterRange.forEach(({ year, quarter }) => {
         let $year = $years.querySelector(`[data-year="${year}"]`);
         if (!$year) {
-          $year = li({ class: `y clr-${yearIndex}`, 'data-year': year }, '\u00A0', div(year));
-          yearIndex += 1; // Increment only for new years
+          $year = li({ class: `y clr-${yIndex}`, 'data-year': year }, '\u00A0', div(year));
+          yIndex += 1; // Increment only for new years
         }
 
         let $quarters = $year.querySelector('ul.quarters');
@@ -100,8 +145,8 @@ export default function decorate(block) {
         }
 
         // Increment the position index for each quarter
-        posIndex += 1;
-        const pos = posIndex;
+        qIndex += 1;
+        const pos = qIndex;
 
         // Create the quarter element and attach it
         const $quarter = li({ class: 'q', 'data-i': pos }, quarter);
@@ -117,29 +162,29 @@ export default function decorate(block) {
         const $projects = ul({ class: 'projects' });
 
         // Iterate over the projects and append them to the quarter
-        projects.forEach(({ title, tip, path }, n) => {
+        projects.forEach(({ title, tip, path, btn }, n) => {
           // Ignore empty projects
           if (title === '') return;
 
           // Process title for (EA) and (GA)
-          let newTitle = title;
-          let suffix = '';
-          if (title.includes('(EA)')) {
-            newTitle = title.replace('(EA)', '');
-            suffix = sup({ title: 'Early Access' }, 'EA');
-          }
-          if (title.includes('(GA)')) {
-            newTitle = newTitle.replace('(GA)', '');
-            suffix = sup({ title: 'General Access' }, 'GA');
-          }
-          newTitle = suffix ? span(newTitle, suffix) : newTitle;
+          const suffixMap = {
+            '(EA)': { title: 'Early Access', label: 'EA' },
+            '(GA)': { title: 'General Access', label: 'GA' },
+          };
+          const suffix = Object.keys(suffixMap).find((key) => title.includes(key));
+          let $pTitle = suffix ? title.replace(suffix, '') : title;
+          const suffixElement = suffix ? sup({ title: suffixMap[suffix].title }, suffixMap[suffix].label) : '';
+
+          $pTitle = span($pTitle, suffixElement);
+
+          const $learnMoreLink = btn.toLowerCase() !== 'hide' ? p(a({ class: 'btn', href: path }, 'Learn more')) : '';
 
           // Create the project element and append it to the project list
-          const $project = li({ class: 'p', style: `--index:${n}` },
-            div(newTitle,
+          const $project = li({ class: 'p', style: `--index:${n}`, tabindex: pTabIndex },
+            div($pTitle,
               div({ class: 'tooltip' },
                 div(tip,
-                  p(a({ class: 'btn', href: path }, 'Learn more')),
+                  $learnMoreLink,
                 ),
               ),
             ),
@@ -150,13 +195,25 @@ export default function decorate(block) {
             $project.classList.toggle('active');
           });
 
+          // Expand on focus
+          $project.addEventListener('focus', () => {
+            $years.querySelectorAll('.active').forEach(($p) => $p.classList.remove('active'));
+            $project.classList.add('active');
+          });
+
+          // Optional: collapse on blur
+          $project.addEventListener('blur', () => {
+            $project.classList.remove('active');
+          });
+
           $projects.appendChild($project);
+          pTabIndex += 1; // Increment only for new years
         });
 
-        $quarter.appendChild($projects);
+        $years.appendChild($year);
+        $year.appendChild($quarters);
         $quarters.appendChild($quarter);
-        if (!$year.contains($quarters)) $year.appendChild($quarters);
-        if (!$years.contains($year)) $years.appendChild($year);
+        $quarter.appendChild($projects);
       });
 
       const quarterObserver = new IntersectionObserver((entries) => {
@@ -175,7 +232,7 @@ export default function decorate(block) {
         // return if the button is disabled
         if (
           (dir === -1 && activePos === 1) // is at start
-          || (dir === 1 && activePos === posIndex) // is at end
+          || (dir === 1 && activePos === qIndex) // is at end
         ) return;
 
         activePos += dir;
@@ -185,15 +242,21 @@ export default function decorate(block) {
 
         // Toggle disabled state for left and right buttons
         $left.classList.toggle('disabled', activePos === 1);
-        $right.classList.toggle('disabled', activePos === posIndex);
+        $right.classList.toggle('disabled', activePos === qIndex);
 
         // Close all active projects
-        $years.querySelectorAll('.active').forEach(($p) => $p.classList.remove('active'));
+        // $years.querySelectorAll('.active').forEach(($p) => $p.classList.remove('active'));
       }
       const $left = div({ class: 'left' }, div());
       const $right = div({ class: 'right' }, div());
       $left.addEventListener('click', () => scroll(-1));
       $right.addEventListener('click', () => scroll(1));
+
+      // keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') scroll(1);
+        if (e.key === 'ArrowLeft') scroll(-1);
+      });
 
       const $timeline = div({ class: 'timeline' }, $years, $left, $right);
 
