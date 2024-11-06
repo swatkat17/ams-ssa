@@ -51,8 +51,8 @@
           position: relative;
           width: 250px;
           height: 250px;
-          border-radius: 50%;
-          object-fit: cover; /* Ensure images cover the entire area without distortion */
+          /*border-radius: 50%;*/
+          object-fit: fill; /* Ensure images cover the entire area without distortion */
           box-shadow: 4px 4px 16px rgb(0 0 0 / 60%);
           scale: 1;
           z-index: 1;

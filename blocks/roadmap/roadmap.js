@@ -1,5 +1,5 @@
 /* eslint-disable no-use-before-define, object-curly-newline, function-paren-newline */
-import { div, ul, li, p, a, span, sup } from '../../scripts/dom-helpers.js';
+/*import { div, ul, li, p, a, span, sup } from '../../scripts/dom-helpers.js';
 import { scrollToMe } from '../../scripts/animations.js';
 import { readBlockConfig } from '../../scripts/aem.js';
 
@@ -39,6 +39,8 @@ function generateYearQuarterRange(start, end) {
   }
   return yearQuarterList;
 }
+
+
 
 // find the earliest and latest year/quarter
 function getEarliestAndLatest(roadmapData) {
@@ -120,7 +122,7 @@ export default function decorate(block) {
       }, {});
 
       const $heading = div({ class: 'heading' },
-        'Future Vision ',
+        'AMS SSA evolution ',
         span('(roadmap)'),
       );
 
@@ -267,6 +269,242 @@ export default function decorate(block) {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const startHere = block.querySelector('.start');
+            scrollToMe($years, startHere, 2000);
+            // stop observing
+            observer.disconnect();
+          }
+        });
+      }, {
+        threshold: [0.20],
+      });
+      roadMapObserver.observe($timeline);
+
+      fixYears($years, $timeline.querySelectorAll('.y'));
+    })
+    .catch((error) => {
+      // eslint-disable-next-line no-console
+      console.error('Error fetching roadmap data:', error);
+    });
+}*/
+
+
+
+//Test Code
+/* eslint-disable no-use-before-define, object-curly-newline, function-paren-newline */
+import { div, ul, li, p, a, span, sup } from '../../scripts/dom-helpers.js';
+import { scrollToMe } from '../../scripts/animations.js';
+import { readBlockConfig } from '../../scripts/aem.js';
+
+// Generate all years between start and end
+function generateYearRange(start, end) {
+  let startYear = parseInt(start, 10);
+  let endYear = parseInt(end, 10);
+
+  // Adjust start to one year earlier
+  //startYear -= 1;
+
+  // Adjust end to one year later
+  //endYear += 1;
+
+  // Fill in any empty years
+  const yearList = [];
+  for (let year = startYear; year <= endYear; year += 1) {
+    yearList.push(year);
+  }
+  return yearList;
+}
+
+// Find the earliest and latest year
+function getEarliestAndLatest(roadmapData) {
+  let earliest = null;
+  let latest = null;
+  roadmapData.forEach(({ year }) => {
+    if (!earliest || year < earliest) {
+      earliest = year;
+    }
+    if (!latest || year > latest) {
+      latest = year;
+    }
+  });
+  return { earliest, latest };
+}
+
+function fixYears(block, years) {
+  // Get center position
+  const leftPosition = (window.innerWidth / 2) - 50;
+
+  block.addEventListener('scroll', () => {
+    const scrollLeftPos = block.scrollLeft;
+
+    years.forEach((year) => {
+      const yearLeftPos = year.offsetLeft;
+      if (scrollLeftPos >= yearLeftPos - leftPosition) {
+        year.classList.add('fixed');
+      } else {
+        year.classList.remove('fixed');
+      }
+    });
+  });
+}
+
+export default function decorate(block) {
+  const blockConfig = readBlockConfig(block);
+
+  // Calculate the current year
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+
+  let activePos = 1;
+  let yIndex = 0;
+  let pTabIndex = 1;
+
+  block.innerHTML = '';
+
+  fetch(blockConfig['data-source'])
+    .then((response) => response.json())
+    .then((data) => {
+      const roadmapData = data.data;
+      const { earliest, latest } = getEarliestAndLatest(roadmapData);
+      const fullYearRange = generateYearRange(earliest, latest);
+
+      // Group data by year
+      const groupData = roadmapData.reduce((acc, { year, project, description, path, sort, btn }) => {
+        acc[year] = acc[year] || [];
+        acc[year].push({ title: project, tip: description, path, sort, btn });
+
+        // Sort the projects for this year by the sort number
+        acc[year].sort((A, B) => A.sort - B.sort);
+
+        return acc;
+      }, {});
+
+      const $heading = div({ class: 'heading' },
+        'AMS SSA evolution ',
+       /* span('(roadmap)'),*/
+      );
+
+      const $disclaimer = div({ class: 'disclaimer' },
+        'EA = Early Availability',
+        span(' | '),
+        'GA = General Availability',
+      );
+
+      const $years = ul({ class: 'years' });
+
+      fullYearRange.forEach((year) => {
+        let $year = $years.querySelector(`[data-year="${year}"]`);
+        if (!$year) {
+          $year = li({ class: `y clr-${yIndex}`, 'data-year': year }, '\u00A0', div(year));
+          yIndex += 1; // Increment only for new years
+        }
+
+        // Retrieve projects for the corresponding year if they exist
+        const projects = groupData[year] || [];
+        const $projects = ul({ class: 'projects' });
+
+        // Iterate over the projects and append them to the year
+        projects.forEach(({ title, tip, path, btn }, n) => {
+          // Ignore empty projects
+          if (title === '') return;
+
+          // Process title for (EA) and (GA)
+          const suffixMap = {
+            '(EA)': { title: 'Early Access', label: 'EA' },
+            '(GA)': { title: 'General Access', label: 'GA' },
+          };
+          const suffix = Object.keys(suffixMap).find((key) => title.includes(key));
+          let $pTitle = suffix ? title.replace(suffix, '') : title;
+          const suffixElement = suffix ? sup({ title: suffixMap[suffix].title }, suffixMap[suffix].label) : '';
+
+          $pTitle = span($pTitle, suffixElement);
+
+          const $learnMoreLink = btn.toLowerCase() !== 'hide' ? p(a({ class: 'btn', href: path }, 'Learn more')) : '';
+
+          // Create the project element and append it to the project list
+          const $project = li({ class: 'p', style: `--index:${n}`, tabindex: pTabIndex },
+            div($pTitle,
+              div({ class: 'tooltip' },
+                div(tip,
+                  $learnMoreLink,
+                ),
+              ),
+            ),
+          );
+
+          $project.addEventListener('click', () => {
+            $years.querySelectorAll('.active').forEach(($p) => $p.classList.remove('active'));
+            $project.classList.toggle('active');
+          });
+
+          // Expand on focus
+          $project.addEventListener('focus', () => {
+            $years.querySelectorAll('.active').forEach(($p) => $p.classList.remove('active'));
+            $project.classList.add('active');
+          });
+
+          // Optional: collapse on blur
+          $project.addEventListener('blur', () => {
+            $project.classList.remove('active');
+          });
+
+          $projects.appendChild($project);
+          pTabIndex += 1; // Increment only for new years
+        });
+
+        $years.appendChild($year);
+        $year.appendChild($projects);
+      });
+
+      const yearObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) entry.target.classList.add('on');
+          else entry.target.classList.remove('on');
+        });
+      }, {
+        threshold: [0.40], root: $years,
+      });
+      $years.querySelectorAll('.y').forEach(($year) => {
+        yearObserver.observe($year);
+      });
+
+      function scroll(dir) {
+        // return if the button is disabled
+        // Adjust activePos within bounds
+  activePos = Math.max(1, Math.min(yIndex, activePos + dir));
+
+  // Find the year element with the data-year matching the activePos year
+  const target = block.querySelector(`[data-year="${fullYearRange[activePos - 1]}"]`);
+
+  if (target) {
+    // Smooth scroll to the targeted year
+    scrollToMe($years, target, 500);
+
+    // Update the disabled state of buttons based on active position
+    $left.classList.toggle('disabled', activePos === 1);
+    $right.classList.toggle('disabled', activePos === yIndex);
+  }
+      }
+      // Event listeners for the left and right scroll buttons
+      const $left = div({ class: 'left' }, div());
+      const $right = div({ class: 'right' }, div());
+      $left.addEventListener('click', () => scroll(-1));
+      $right.addEventListener('click', () => scroll(1));
+
+      // keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') scroll(1);
+        if (e.key === 'ArrowLeft') scroll(-1);
+      });
+
+      const $timeline = div({ class: 'timeline' }, $years, $left, $right);
+
+      block.append($heading, $timeline, $disclaimer);
+
+      // scroll to start for initial scroll
+      const roadMapObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const startHere = block.querySelector(`[data-year="${currentYear}"]`);
             scrollToMe($years, startHere, 2000);
             // stop observing
             observer.disconnect();
