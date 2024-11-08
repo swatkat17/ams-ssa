@@ -17,21 +17,20 @@ export default function decorate(block) {
     // row.classList.add('scale');
 
     [...row.children].forEach((col, i) => {
-      if (i % 2 === 0) col.classList.add('left');
-      else col.classList.add('right');
+      col.classList.add('col');
 
-      const pic = col.querySelector('picture');
-      if (pic) {
-        const picWrapper = pic.closest('div');
-        if (picWrapper && picWrapper.children.length === 1) {
-          picWrapper.classList.add('img-col');
-        }
-        const img = pic.querySelector('img');
-        const newImg = createOptimizedPicture(img.src, 'alt', true, [{ width: '400px' }]);
-        img.replaceWith(newImg);
-      } else {
-        col.classList.add('text-col');
-      }
+      // const pic = col.querySelector('picture');
+      // if (pic) {
+      //   const picWrapper = pic.closest('div');
+      //   if (picWrapper && picWrapper.children.length === 1) {
+      //     picWrapper.classList.add('img-col');
+      //   }
+      //   const img = pic.querySelector('img');
+      //   const newImg = createOptimizedPicture(img.src, 'alt', true, [{ width: '400px' }]);
+      //   img.replaceWith(newImg);
+      // } else {
+      //   col.classList.add('text-col');
+      // }
     });
   });
 }
