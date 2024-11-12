@@ -1,7 +1,8 @@
 header {
-  background: rgb(41 41 41 / 80%);
+  background: rgb(3 31 59 / 90%);
   color: #fff;
   box-shadow:0 0 14px 1px rgb(0 0 0 / 10%);
+  transition: all 400ms;
 
   &.top {
     background: transparent;
