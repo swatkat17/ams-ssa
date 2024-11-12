@@ -1,29 +1,136 @@
 /* eslint-disable no-use-before-define, object-curly-newline, function-paren-newline */
 import { div, span, a, img } from '../../scripts/dom-helpers.js';
 
+// function animateHeader($hdr) {
+//   const sections = document.querySelectorAll('.section');
+//
+//   // Track the last section that triggered an invert to prevent unnecessary toggling
+//   let lastInvertState = null;
+//
+//   window.addEventListener('scroll', () => {
+//     let isInDarkSection = false;
+//
+//     sections.forEach((section) => {
+//       const sectionTop = section.getBoundingClientRect().top;
+//
+//       // Check if the section is at 60px from the top and contains the 'dark' class
+//       if (sectionTop <= 60 && sectionTop + section.offsetHeight > 60) {
+//         if (section.classList.contains('dark')) {
+//           isInDarkSection = true;
+//         }
+//       }
+//     });
+//
+//     // Toggle the header's invert class only when changing from dark to non-dark sections
+//     if (isInDarkSection !== lastInvertState) {
+//       if (!isInDarkSection) {
+//         $hdr.classList.add('invert');
+//       } else {
+//         $hdr.classList.remove('invert');
+//       }
+//       lastInvertState = isInDarkSection;
+//     }
+//   });
+// }
+
 function animateHeader($hdr) {
-  const $hero = document.querySelector('.hero-wrapper');
-  const $scrollableContainer = document.body;
+  const sections = document.querySelectorAll('.section');
+  const firstSection = sections[0]; // Get the first section separately
+  let lastInvertState = null;
 
-  // if (!$hdr || !$parallax || !$scrollableContainer) {
-  //   return;
-  // }
+  const checkHeaderClasses = () => {
+    const scrollPosition = window.scrollY;
 
-  const hdrHeight = $hdr.offsetHeight;
-  const parallaxHeight = $hero.offsetHeight;
-  function updateStyles() {
-    const scrollPosition = $scrollableContainer.scrollTop;
-    if (scrollPosition >= parallaxHeight - hdrHeight) {
-      $hdr.classList.add('invert');
-    } else {
-      $hdr.classList.remove('invert');
+    // Handle the blur effect based on scroll position
+    let blurValue = 0;
+    if (scrollPosition > 40) {
+      blurValue = Math.min((scrollPosition - 40) / 400 * 20, 20); // Scale blur from 0 to 30
     }
-  }
+    $hdr.style.backdropFilter = `blur(${blurValue}px)`;
 
-  updateStyles();
+    // Check if the header is within the view of the first section
+    const firstSectionTop = firstSection.getBoundingClientRect().top;
+    if (firstSectionTop <= 60 && firstSectionTop + firstSection.offsetHeight > 60) {
+      $hdr.classList.add('top');
+    } else {
+      $hdr.classList.remove('top');
+    }
 
-  $scrollableContainer.addEventListener('scroll', updateStyles);
+    // Check for dark section toggle logic
+    let isInDarkSection = false;
+    sections.forEach((section) => {
+      const sectionTop = section.getBoundingClientRect().top;
+      if (sectionTop <= 60 && sectionTop + section.offsetHeight > 60) {
+        if (section.classList.contains('dark')) {
+          isInDarkSection = true;
+        }
+      }
+    });
+
+    if (isInDarkSection !== lastInvertState) {
+      if (!isInDarkSection) {
+        $hdr.classList.add('invert');
+      } else {
+        $hdr.classList.remove('invert');
+      }
+      lastInvertState = isInDarkSection;
+    }
+  };
+
+  // Bind the scroll event listener
+  window.addEventListener('scroll', checkHeaderClasses);
+
+  // Initialize on load
+  checkHeaderClasses();
 }
+
+// function animateHeader($hdr) {
+//   const sections = document.querySelectorAll('.section');
+//   const firstSection = sections[0]; // Get the first section separately
+//
+//   // Track the last section that triggered an invert to prevent unnecessary toggling
+//   let lastInvertState = null;
+//
+//   const checkHeaderClasses = () => {
+//     let isInDarkSection = false;
+//
+//     // Check if the header is within the view of the first section
+//     const firstSectionTop = firstSection.getBoundingClientRect().top;
+//     if (firstSectionTop <= 60 && firstSectionTop + firstSection.offsetHeight > 60) {
+//       $hdr.classList.add('top');
+//     } else {
+//       $hdr.classList.remove('top');
+//     }
+//
+//     // Check other sections for the 'invert' toggle logic
+//     sections.forEach((section) => {
+//       const sectionTop = section.getBoundingClientRect().top;
+//
+//       // Check if the section is at 60px from the top and contains the 'dark' class
+//       if (sectionTop <= 60 && sectionTop + section.offsetHeight > 60) {
+//         if (section.classList.contains('dark')) {
+//           isInDarkSection = true;
+//         }
+//       }
+//     });
+//
+//     // Toggle the header's invert class only when changing from dark to non-dark sections
+//     if (isInDarkSection !== lastInvertState) {
+//       if (!isInDarkSection) {
+//         $hdr.classList.add('invert');
+//       } else {
+//         $hdr.classList.remove('invert');
+//       }
+//       lastInvertState = isInDarkSection;
+//     }
+//   };
+//
+//   // Bind the scroll event listener
+//   window.addEventListener('scroll', checkHeaderClasses);
+//
+//   // Call the function once on load to initialize classes correctly
+//   checkHeaderClasses();
+// }
 
 export default async function decorate(block) {
   const $homeBtn = a({ class: 'home', href: '/' },
@@ -53,12 +160,12 @@ export default async function decorate(block) {
   const $hdr = document.querySelector('header');
   $hdr.append($header);
 
-  const $parallax = document.querySelector('#parallax-page-wrapper');
-  if ($parallax) {
-    $parallax.prepend($hdr);
-  } else {
-    document.body.prepend($hdr);
-  }
+  // const $parallax = document.querySelector('#parallax-page-wrapper');
+  // if ($parallax) {
+  //   $parallax.prepend($hdr);
+  // } else {
+  //   document.body.prepend($hdr);
+  // }
 
   animateHeader($hdr);
 }

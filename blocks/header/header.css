@@ -1,13 +1,17 @@
 header {
-  background: transparent;
-  backdrop-filter: blur(6px);
+  background: rgb(41 41 41 / 80%);
   color: #fff;
-  transition: all 0.5s;
+  box-shadow:0 0 14px 1px rgb(0 0 0 / 10%);
+
+  &.top {
+    background: transparent;
+    box-shadow: unset;
+  }
 
   &.invert {
-    background: rgb(255 255 255 / 90%);
+    background: rgb(255 255 255 / 80%);
     color: #000;
-    box-shadow:0 0 4px 1px rgb(0 0 0 / 10%);
+    transition: all 400ms;
   }
 
   div {
