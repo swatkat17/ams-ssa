@@ -23,7 +23,7 @@
 	--green: #009c3b;
 	--yellow: #ffce2e;
 	--orange: #e9740a;
-  --background: red;
+  --background: #fff;
   --dark-background: #292929;
 
   /* elements */
@@ -92,6 +92,7 @@ body {
   font-size: var(--body-font-size-m);
   color: var(--text);
   text-rendering: optimizelegibility;
+  background: var(--background);
 }
 
 
@@ -279,6 +280,7 @@ main {
   }
 
   &.icon-world-map,
+  &.icon-sovereign-technology,
   &.icon-ssa-features2 {
     width: 100%;
     height: auto;
