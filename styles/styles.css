@@ -281,6 +281,7 @@ main {
 
   &.icon-world-map,
   &.icon-sovereign-technology,
+  &.icon-ssa-timeline2,
   &.icon-ssa-features2 {
     width: 100%;
     height: auto;
@@ -305,7 +306,8 @@ button.cse-notes {
 
 
 /* RANDOM STYLES - todo: fix later */
-#ssa-features {
+#ssa-features,
+#ams-ssa-evolution {
   margin-bottom: 80px;
 }
 
