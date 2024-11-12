@@ -65,7 +65,7 @@ main > .section > div.roadmap-wrapper {
         gap: 40px; /* Space between each year */
         padding: 20px;
         overflow: auto;
-    
+
 
 
         /* Loop colors using nth-child for repeating color classes */
@@ -213,7 +213,7 @@ main > .section > div.roadmap-wrapper {
         top: 0;
         bottom: 0;
         left: 0;
-        width: max(80px, calc((100vw - var(--page-width)) / 2));
+        width: max(80px, calc((100vw - var(--page-max-width)) / 2));
         cursor: pointer;
         display: flex;
         align-items: center;

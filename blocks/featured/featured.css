@@ -24,7 +24,7 @@ main > .section > div.featured-wrapper {
 
     .content {
       position: relative;
-      max-width: var(--page-width);
+      max-width: var(--page-max-width);
       height: inherit;
       margin: -32vw auto 0; /* match height in wrapper */
       color: #fff;

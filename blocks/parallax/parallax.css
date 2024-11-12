@@ -78,7 +78,7 @@ body {
     inset: 0;
     top: calc(var(--nav-height) * -1);
     left: 15px; /* todo: p10 strange alignment fix */
-    max-width: var(--page-width);
+    max-width: var(--page-max-width);
     height: 100%;
     margin: 0 auto;
     box-shadow: 0 0 200px #000;
@@ -89,7 +89,6 @@ body {
       opacity: 1;
       filter: blur(0);
       scale: 100%;
-      margin-left: 0;
     }
 
     &.content-0 { /* foreground text */
@@ -97,18 +96,19 @@ body {
       opacity: 0;
       filter: blur(20px);
       scale: 100%;
-      margin-left: -120px;
+      margin-left: -160px;
       transition: all 1s;
 
       > div {
-        width: 500px;
-      }
+        width: 600px;
+     }
 
       h2 {
         font-size: var(--heading-font-size-xl);
         font-weight: 600;
         margin: 0;
         text-shadow: 2px 2px 8px rgb(0 0 0 / 90%);
+        text-align: left;
       }
 
       p {
