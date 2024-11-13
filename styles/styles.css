@@ -17,7 +17,7 @@
 	--light-gray: #f5f5f5;
 	--pink: #e63888;
 	--purple: #6349e0;
-	--blue: #3273de;
+	--blue: #1374d7;
 	--light-blue: #2799f6;
 	--teal: #21a5a2;
 	--green: #009c3b;
@@ -114,26 +114,24 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 900;
   line-height: 1.25;
   scroll-margin: 40px;
-  text-align: center;
 }
 
 h1 { font-size: var(--heading-font-size-xl); }
-/*h2 { font-size: var(--heading-font-size-xl); }*/
-/*h3 { font-size: var(--heading-font-size-l); }*/
-
 h5 { font-size: var(--heading-font-size-s); }
 h6 { font-size: var(--heading-font-size-s); }
 
 h2 {
   font-size: var(--heading-font-size-m);
-  font-weight: 600;
+  font-weight: 200;
   margin: 0;
 }
 
 h3 {
   font-size: var(--heading-font-size-xxl);
-  font-weight: 200;
-  margin: 0;
+  font-weight: 600;
+  margin: 0 0 40px;
+  text-align: center;
+  color: var(--blue);
 }
 
 h4 {
@@ -174,37 +172,29 @@ input, textarea, select, button {
   font: inherit;
 }
 
-/* main img {
-  max-width: 100%;
-  width: auto;
-  height: auto;
-/* } */
-
 ol {
   padding: 0;
   margin: 20px 0 0 20px;
-  list-style: none;
-  list-style-position: inside; /* Controls the position of the list marker */
-  counter-reset: list-item; /* Resets list item counter */
+  list-style: none inside none;
+  counter-reset: list-item;
 }
 
 /* Styling for list items */
 ol li {
-  padding: 20px 0 10px; /* Add space around each item */
-  border-bottom: 1px solid #ddd; /* Add a subtle border between items */
+  padding: 20px 0 10px;
+  border-bottom: 1px solid #ddd;
 }
 
 /* Style for the numbers */
 ol li::before {
-  content: counter(list-item) ". "; /* Display numbers followed by a period */
-  font-weight: bold; /* Make numbers bold */
-  color: #007BFF; /* Use a color for the numbers (e.g., blue) */
-  margin-left: -20px; /* Space between the number and the text */
+  content: counter(list-item) ". ";
+  font-weight: bold;
+  color: #007BFF;
+  margin-left: -20px;
 }
 
 main {
-  margin-top: calc(var(--nav-height) * -1); /* move nav up behind header */
-
+  margin-top: calc(var(--nav-height) * -1); /* move up to be behind header */
 
   .section {
     padding: 120px 0;
@@ -220,7 +210,6 @@ main {
       padding: 10px 40px;
       box-sizing: border-box;
     }
-
   }
 
   .default-content-wrapper {
@@ -237,6 +226,12 @@ main {
     a {
       color: var(--blue);
       text-decoration: none;
+    }
+
+    /* :svg: full width */
+    > p > .icon {
+      width: 100%;
+      height: auto;
     }
   }
 }
@@ -266,8 +261,6 @@ main {
   }
 }
 
-
-
 .icon {
   display: inline-block;
   height: 24px;
@@ -277,17 +270,12 @@ main {
     display: block;
     height: 100%;
     width: 100%;
-  }
 
-  &.icon-world-map,
-  &.icon-sovereign-technology,
-  &.icon-ssa-timeline2,
-  &.icon-ssa-features2 {
-    width: 100%;
-    height: auto;
+    .gray {
+      fill: red;
+    }
   }
 }
-
 
 
 button.cse-notes {
@@ -305,13 +293,13 @@ button.cse-notes {
 }
 
 
-/* RANDOM STYLES - todo: fix later */
-#ssa-features,
-#ams-ssa-evolution {
-  margin-bottom: 80px;
-}
+/*!* RANDOM STYLES - todo: fix later *!*/
+/*#ssa-features,*/
+/*#ams-ssa-evolution {*/
+/*  margin-bottom: 80px;*/
+/*}*/
 
-h2#adobe-managed-services {
-  margin-top: 120px;
-}
+/*h2#adobe-managed-services {*/
+/*  margin-top: 120px;*/
+/*}*/
 
