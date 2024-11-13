@@ -1,15 +1,16 @@
 .columns {
-  margin: 40px 0 60px;
+  margin: 40px 0 0;
 
-  > div { /* row */
+  /* row */
+  > div {
     display: flex;
-    flex-direction: row;
-    align-items: baseline;
+    flex-flow: row wrap;
     align-items: stretch;
     gap: 40px;
   }
 
-  > div > div { /* column */
+  /* column */
+  > div > div {
     flex: 1;
     margin: 20px 0;
 
@@ -19,18 +20,27 @@
       line-height: 1.4em;
     }
 
-    &.center {
-      text-align: center;
-    }
+    &.center { text-align: center }
   }
 }
-
 
 .columns.pillars {
   margin: 0;
 
-  > div { /* row */
+  /* row */
+  > div {
     gap: 60px;
+
+    @media (width <= 1500px) {
+      gap: 40px;
+    }
+  }
+
+  @media (width <= 1100px) {
+    > div > div {
+      flex: 1 1 45%; /* Each column will take up roughly half the row */
+      /*min-width: 30%; !* Ensures each item gets at least this width *!*/
+    }
   }
 
   .col {
@@ -41,13 +51,15 @@
     p {
       margin: 0;
       color: #fff;
-      &:not(:has(img)) { padding: 20px 30px }
+
+      &:not(:has(img)) {
+        padding: 20px 30px
+      }
     }
 
     h4 {
       color: #fff;
       text-align: center;
-      font-weight: 800;
     }
 
     picture {
@@ -71,7 +83,7 @@
         height: auto;
         object-fit: cover;
         filter: contrast(200%);
-        mix-blend-mode: hard-light;  /* hard-light, luminosity, overlay */
+        mix-blend-mode: hard-light; /* hard-light, luminosity, overlay */
         opacity: .6;
         border-radius: inherit;
 
@@ -84,8 +96,13 @@
 .columns.icon-grid {
   margin: 0;
 
-  > div { /* row */
+  /* row */
+  > div {
     gap: 60px;
+
+    @media (width <= 1100px) {
+      gap: 0 !important;
+    }
   }
 
   .col {
@@ -95,13 +112,26 @@
     .icon, img {
       width: auto;
       height: 160px;
+
+      @media (width <= 1100px) { height: 140px !important }
+
+      @media (width <= 740px) { height: 100px !important }
+
+      @media (width <= 540px) { height: 80px !important }
     }
 
-    h4 { margin: 20px 0 100px }
+    h4 {
+      margin: 20px 0 100px;
+      color: #535353;
+
+      @media (width <= 1100px) {
+        font-size: clamp(22px, 3.5vw, 40px);
+      }
+    }
   }
 
-  > div > div { /* column */
-
+  /* column */
+  > div > div {
     &.center {
       text-align: center;
 
@@ -111,5 +141,13 @@
       }
     }
   }
+}
 
+.columns.icon-grid.certifications {
+  .col {
+    .icon, img {
+      height: 180px;
+    }
+    h4 { margin: 0 0 30px }
+  }
 }

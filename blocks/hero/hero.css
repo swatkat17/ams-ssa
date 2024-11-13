@@ -36,19 +36,28 @@ main > .section > div.hero-wrapper {
 
 
       > div {
-        text-align: left;
-        text-shadow: 4px 4px 6px rgb(3 31 59 / 50%);
+        text-shadow: 4px 4px 10px rgb(3 31 59 / 80%);
         padding-left: 40px;
+
+        @media (width <= 1500px) {
+          text-shadow: 2px 2px 12px rgb(0 0 0 / 100%);
+        }
 
         h3 {
           margin: 0;
           color: #fff;
+          text-align: left;
         }
 
         p {
           font-weight: 300;
           font-size: var(--body-font-size-l);
           line-height: 1.6em;
+
+          @media (width <= 760px) {
+            br { display: none }
+          }
+
         }
       }
     }
