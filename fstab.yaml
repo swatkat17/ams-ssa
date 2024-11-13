@@ -1,2 +1,3 @@
 mountpoints:
-  /: https://adobe.sharepoint.com/:f:/r/sites/AMS-Marketing/Shared%20Documents/AMS%20SSA%20Site?csf=1&web=1&e=IQcL6S
+# commenting out as repo for this site is now located at https://github.com/aemsites/ams-ssa
+#  /: https://adobe.sharepoint.com/:f:/r/sites/AMS-Marketing/Shared%20Documents/AMS%20SSA%20Site?csf=1&web=1&e=IQcL6S
