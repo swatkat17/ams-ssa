@@ -1,6 +1,5 @@
 import { getMetadata } from '../../scripts/aem.js';
 import { loadFragment } from '../fragment/fragment.js';
-import { div } from '../../scripts/dom-helpers.js';
 
 /**
  * loads and decorates the footer
@@ -19,14 +18,4 @@ export default async function decorate(block) {
 
   block.append(footer);
 
-  const $hackathonModal = div(
-    { class: 'hackathon-modal' },
-    'This site was developed for the 2024 Hackathon. '
-    + 'It\'s a POC and is best viewed on a desktop. '
-    + 'Mobile styles still need some tweaking. '
-    + 'Thanks for looking!  :-)',
-  );
-  const $hackathonOverlay = div({ class: 'hackathon-overlay' });
-  const body = document.querySelector('body');
-  body.append($hackathonModal, $hackathonOverlay);
 }
